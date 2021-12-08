@@ -81,7 +81,7 @@ const asyncRoutes = [
     meta: {
       title: 'Permission',
       icon: 'lock',
-      roles: ['admin', 'editor']
+      roles: ['admin', 'user']
     },
     children: [
       {
@@ -132,7 +132,7 @@ const asyncRoutes = [
     redirect: 'noRedirect',
     name: 'ComponentDemo',
     meta: {
-      title: 'Components',
+      title: 'components',
       icon: 'component'
     },
     children: [

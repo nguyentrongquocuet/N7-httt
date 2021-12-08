@@ -20,6 +20,17 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import VueGeolocation from 'vue-browser-geolocation/src'
+Vue.use(VueGeolocation)
+
+// import * as VueGoogleMaps from 'vue2-google-maps'
+// Vue.use(VueGoogleMaps, {
+//   load: {
+//     key: 'AIzaSyBoOKs4McN9DARUQG1lJEShJ_TXL2oIr0Q'
+//   },
+//   installComponents: true
+// })
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -51,3 +62,4 @@ new Vue({
   store,
   render: h => h(App)
 })
+

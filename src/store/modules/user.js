@@ -4,10 +4,17 @@ import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: '',
-  avatar: '',
   introduction: '',
-  roles: []
+  avatar: '',
+  roles: [],
+
+  name: '',
+  gender: '',
+  dob: '',
+  phoneNumber: '',
+  telegramUserName: '',
+  address: '',
+  checkInHistory: []
 }
 
 const mutations = {
@@ -17,14 +24,32 @@ const mutations = {
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
   },
-  SET_NAME: (state, name) => {
-    state.name = name
-  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_NAME: (state, name) => {
+    state.name = name
+  },
+  SET_GENDER: (state, gender) => {
+    state.gender = gender
+  },
+  SET_DOB: (state, dob) => {
+    state.dob = dob
+  },
+  SET_PHONE_NUMBER: (state, phoneNumber) => {
+    state.phoneNumber = phoneNumber
+  },
+  SET_ADDRESS: (state, address) => {
+    state.address = address
+  },
+  SET_TELEGRAM_USERNAME: (state, telegramUserName) => {
+    state.telegramUserName = telegramUserName
+  },
+  SET_CHECKIN_HISTORY: (state, checkInHistory) => {
+    state.checkInHistory = checkInHistory
   }
 }
 
@@ -54,17 +79,24 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { introduction, avatar, roles, name, gender, dob, phoneNumber, telegramUserName, address, checkInHistory } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
+        commit('SET_INTRODUCTION', introduction)
+        commit('SET_AVATAR', avatar)
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
+        commit('SET_GENDER', gender)
+        commit('SET_DOB', dob)
+        commit('SET_PHONE_NUMBER', phoneNumber)
+        commit('SET_ADDRESS', address)
+        commit('SET_TELEGRAM_USERNAME', telegramUserName)
+        commit('SET_CHECKIN_HISTORY', checkInHistory)
+
         resolve(data)
       }).catch(error => {
         reject(error)

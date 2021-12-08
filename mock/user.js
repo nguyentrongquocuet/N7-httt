@@ -3,8 +3,8 @@ const tokens = {
   admin: {
     token: 'admin-token'
   },
-  editor: {
-    token: 'editor-token'
+  user: {
+    token: 'user-token'
   }
 }
 
@@ -13,13 +13,67 @@ const users = {
     roles: ['admin'],
     introduction: 'I am a super administrator',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
+    name: 'Nông Văn Cương',
+    gender: 'Nam',
+    dob: '31/10/2000',
+    phoneNumber: '0976338310',
+    telegramUserName: 'Cuongnv7',
+    address: 'Kí túc xá Đại học Ngoại Ngữ - ĐHQH Hà Nội',
+    checkInHistory: [
+      {
+        timestamp: '2019/4/20',
+        title: 'Circle K Phạm Văn Đồng',
+        content: 'Ngồi tại tầng 2 trong 2h'
+      },
+      {
+        timestamp: '2019/4/21',
+        title: '319 Tower',
+        content: 'Làm việc cả ngày tại tầng 9 của tòa'
+      },
+      {
+        timestamp: '2019/4/22',
+        title: 'Trường tiểu học Xuân Phương',
+        content: 'Chơi cầu lông từ 20h - 22h'
+      },
+      {
+        timestamp: '2019/4/23',
+        title: 'Kí túc xá Ngoại Ngữ',
+        content: 'Chơi cầu lông từ 17h - 19h'
+      }
+    ]
   },
-  'editor-token': {
-    roles: ['editor'],
-    introduction: 'I am an editor',
+  'user-token': {
+    roles: ['user'],
+    introduction: 'I am an user',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Normal Editor'
+    name: 'Vũ Thị Hương',
+    gender: 'Nữ',
+    dob: '20/10/2000',
+    phoneNumber: '0976338310',
+    telegramUserName: 'vuthihuong',
+    address: 'Minh Long - Hạ Lang - Cao Bằng',
+    checkInHistory: [
+      {
+        timestamp: '2019/4/20',
+        title: 'Circle K Phạm Văn Đồng',
+        content: 'Ngồi tại tầng 2 trong 2h'
+      },
+      {
+        timestamp: '2019/4/21',
+        title: '319 Tower',
+        content: 'Làm việc cả ngày tại tầng 9 của tòa'
+      },
+      {
+        timestamp: '2019/4/22',
+        title: 'Trường tiểu học Xuân Phương',
+        content: 'Chơi cầu lông từ 20h - 22h'
+      },
+      {
+        timestamp: '2019/4/23',
+        title: 'Kí túc xá Ngoại Ngữ',
+        content: 'Chơi cầu lông từ 17h - 19h'
+      }
+    ]
   }
 }
 

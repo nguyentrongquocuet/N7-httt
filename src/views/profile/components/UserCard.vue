@@ -1,7 +1,7 @@
 <template>
   <el-card style="margin-bottom:20px;">
     <div slot="header" class="clearfix">
-      <span>About me</span>
+      <span>Thông tin cá nhân</span>
     </div>
 
     <div class="user-profile">
@@ -18,33 +18,43 @@
     </div>
 
     <div class="user-bio">
-      <div class="user-education user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="education" /><span>Education</span></div>
+      <div class="user-bio-section">
+        <div class="user-bio-section-header"><span>Giới tính</span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            JS in Computer Science from the University of Technology
+            {{ user.gender }}
           </div>
         </div>
       </div>
-
-      <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
+      <div class="user-bio-section">
+        <div class="user-bio-section-header"><span>Ngày sinh</span></div>
         <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
+          <div class="text-muted">
+            {{ user.dob }}
           </div>
-          <div class="progress-item">
-            <span>JavaScript</span>
-            <el-progress :percentage="18" />
+        </div>
+      </div>
+      <div class="user-bio-section">
+        <div class="user-bio-section-header"><span>Số điện thoại</span></div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.phoneNumber }}
           </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="12" />
+        </div>
+      </div>
+      <div class="user-bio-section">
+        <div class="user-bio-section-header"><span>Tài khoản Telegram</span></div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.telegramUserName }}
           </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
+        </div>
+      </div>
+      <div class="user-bio-section">
+        <div class="user-bio-section-header"><span>Địa chỉ hiện tại</span></div>
+        <div class="user-bio-section-body">
+          <div class="text-muted">
+            {{ user.address }}
           </div>
         </div>
       </div>
@@ -62,10 +72,14 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: '',
-          email: '',
+          role: '',
           avatar: '',
-          role: ''
+          name: '',
+          gender: '',
+          dob: '',
+          phoneNumber: '',
+          telegramUserName: '',
+          address: ''
         }
       }
     }
@@ -116,7 +130,7 @@ export default {
   color: #606266;
 
   span {
-    padding-left: 4px;
+    padding-left: 0px;
   }
 
   .user-bio-section {

@@ -13,30 +13,33 @@
 
 <script>
 export default {
-  data() {
-    return {
-      timeline: [
-        {
-          timestamp: '2019/4/20',
-          title: 'Update Github template',
-          content: 'PanJiaChen committed 2019/4/20 20:46'
-        },
-        {
-          timestamp: '2019/4/21',
-          title: 'Update Github template',
-          content: 'PanJiaChen committed 2019/4/21 20:46'
-        },
-        {
-          timestamp: '2019/4/22',
-          title: 'Build Template',
-          content: 'PanJiaChen committed 2019/4/22 20:46'
-        },
-        {
-          timestamp: '2019/4/23',
-          title: 'Release New Version',
-          content: 'PanJiaChen committed 2019/4/23 20:46'
-        }
-      ]
+  props: {
+    timeline: {
+      type: Array,
+      default: () => {
+        return [
+          {
+            timestamp: '2019/4/20',
+            title: 'Circle K Phạm Văn Đồng',
+            content: 'Ngồi tại tầng 2 trong 2h'
+          },
+          {
+            timestamp: '2019/4/21',
+            title: '319 Tower',
+            content: 'Làm việc cả ngày tại tầng 9 của tòa'
+          },
+          {
+            timestamp: '2019/4/22',
+            title: 'Trường tiểu học Xuân Phương',
+            content: 'Chơi cầu lông từ 20h - 22h'
+          },
+          {
+            timestamp: '2019/4/23',
+            title: 'Kí túc xá Ngoại Ngữ',
+            content: 'Chơi cầu lông từ 17h - 19h'
+          }
+        ]
+      }
     }
   }
 }
