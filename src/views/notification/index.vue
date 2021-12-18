@@ -4,8 +4,16 @@
       <div slot="header" class="clearfix">
         <span><strong>THÔNG BÁO</strong></span>
         <div style="float: right">
-          <el-button v-if="!checkPermission(['admin'])" size="small" type="success" icon="el-icon-message">Đăng ký nhận thông báo</el-button>
-          <el-button v-if="checkPermission(['admin'])" size="small" type="success" icon="el-icon-edit" @click="dialogVisible= true">
+          <el-button v-if="!checkPermission(['admin'])" size="small" type="success" icon="el-icon-message">Đăng ký nhận
+            thông báo
+          </el-button>
+          <el-button
+            v-if="checkPermission(['admin'])"
+            size="small"
+            type="success"
+            icon="el-icon-edit"
+            @click="dialogVisible= true"
+          >
             Gửi thông báo
           </el-button>
         </div>
@@ -22,7 +30,7 @@
     <el-dialog :visible.sync="dialogVisible" title="Thông báo mới">
       <el-form v-model="messageForm">
         <el-form-item prop="cities" label="Tới Thành phố">
-          <drag-select style="width: 100%; margin:0px" />
+          <drag-select style="width: 100%; margin:0" @change="setCities" />
         </el-form-item>
         <el-form-item prop="receiver" label="Tới mã Telegram người dùng">
           <el-input v-model="messageForm.receiver" />
@@ -46,7 +54,7 @@ import message from '@/views/notification/components/message'
 import MessageFilter from '@/views/notification/components/messagefilter'
 import DragSelect from '@/views/notification/components/DragSelect'
 import checkPermission from '@/utils/permission'
-import { sendMessage } from '@/api/medicalrecord'
+import { sendMessage } from '@/api/notification'
 
 export default {
   name: 'Index',
@@ -149,6 +157,11 @@ export default {
         }
         this.sendMessageProcessing = false
       }, 200)
+    },
+    setCities(cities) {
+      console.log('change cities')
+      console.log(cities)
+      this.messageForm.cities = cities
     }
   }
 }

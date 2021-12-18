@@ -16,8 +16,15 @@ export function isExternal(path) {
  */
 export function validUsername(str) {
   // sua permisstion
-  const valid_map = ['admin', 'user']
-  return valid_map.indexOf(str.trim()) >= 0
+  // const valid_map = ['admin', 'user']
+  // return valid_map.indexOf(str.trim()) >= 0
+  if (str == null) {
+    return false
+  }
+  if (str.indexOf(' ') >= 0) {
+    return false
+  }
+  return str.length !== 0
 }
 
 /**

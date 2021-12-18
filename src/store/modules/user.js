@@ -1,13 +1,11 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, getCheckInHistory } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  introduction: '',
   avatar: '',
   roles: [],
-
   name: '',
   gender: '',
   dob: '',
@@ -20,9 +18,6 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
-  },
-  SET_INTRODUCTION: (state, introduction) => {
-    state.introduction = introduction
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -62,6 +57,7 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        console.log(data)
         resolve()
       }).catch(error => {
         reject(error)
@@ -79,14 +75,13 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { introduction, avatar, roles, name, gender, dob, phoneNumber, telegramUserName, address, checkInHistory } = data
+        const { avatar, roles, name, gender, dob, phoneNumber, telegramUserName, address } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_INTRODUCTION', introduction)
         commit('SET_AVATAR', avatar)
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
@@ -95,7 +90,7 @@ const actions = {
         commit('SET_PHONE_NUMBER', phoneNumber)
         commit('SET_ADDRESS', address)
         commit('SET_TELEGRAM_USERNAME', telegramUserName)
-        commit('SET_CHECKIN_HISTORY', checkInHistory)
+        // commit('SET_CHECKIN_HISTORY', checkInHistory)
 
         resolve(data)
       }).catch(error => {
@@ -104,6 +99,19 @@ const actions = {
     })
   },
 
+  getCheckInHistory({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getCheckInHistory(state.name).then(response => {
+        const { checkInHistory } = response.data
+        commit('SET_CHECKIN_HISTORY', checkInHistory)
+        resolve()
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('Lỗi khi lấy thông tinv về lịch sử đi lại !')
+        reject(err)
+      })
+    })
+  },
   // user logout
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {

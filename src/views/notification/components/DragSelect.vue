@@ -1,6 +1,6 @@
 <template>
   <div class="components-container">
-    <el-drag-select v-model="value" style="width:100%;" multiple placeholder="Chọn thành phố">
+    <el-drag-select v-model="value" style="width:100%;" multiple placeholder="Chọn thành phố" @input="validateInput">
       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
     </el-drag-select>
 
@@ -25,8 +25,20 @@ export default {
     }
   },
   methods: {
+    validateInput(cities) {
+      if (this.isOptionAllCity(cities[cities.length - 1])) {
+        this.value.splice(0, cities.length - 1)
+      } else if (this.isOptionAllCity(cities[0])) {
+        this.value.splice(0, 1)
+      }
+      this.$emit('change', this.value)
+    },
+    isOptionAllCity(city) {
+      return city != null && city.toLowerCase() === 'Tất cả'.toLowerCase()
+    }
   }
 }
+
 function enrichCityName() {
   const options = []
   options.push({
@@ -42,6 +54,7 @@ function enrichCityName() {
   console.log(options)
   return options
 }
+
 const CITIES = [
   'An Giang',
   'Kon Tum',

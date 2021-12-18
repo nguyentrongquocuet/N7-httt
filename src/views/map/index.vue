@@ -39,7 +39,7 @@
 <script>
 import { init } from '@/utils/gmaps'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
-import { fetchData } from '@/api/medicalrecord'
+import { fetchData } from '@/api/map'
 import { convertToYYYYMMDDFormat } from '@/utils/dateUtils'
 import BarChart from '@/views/map/components/BarChart'
 
