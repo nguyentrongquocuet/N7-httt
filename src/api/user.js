@@ -17,7 +17,7 @@ import axios from 'axios'
 */
 export function login(data) {
   const url = 'http://localhost:8080/login'
-  const config = { headers: { 'Content-Type': 'application/json' }}
+  const config = { headers: { 'Content-Type': 'application/json' } }
   return axios.post(url, data, config)
 }
 
@@ -31,6 +31,7 @@ export function getInfo(token) {
     params: { token }
   })
 }
+
 /*
 *   TODO: QUỐC ơi sau khi đăng nhập (có token rồi).
 *   thì sẽ có tiếp request lấy thông tin người dùng
@@ -43,6 +44,30 @@ export function getInfo(token) {
 //   const config = { headers: { 'Authorization': token }}
 //   return axios.get(url, config)
 // }
+
+/*
+* //TODO: Quốc ơi updateUserInfo cập nhật thông tin cá nhân của user
+*    thông tin có thể cập nhật được
+*user {
+* name:
+* gender:
+* dob:
+* phoneNumber:
+* telegramUserName:
+* address:
+* }
+* trả về thông tin user sau khi cập nhật giống như getUserInfo,
+* khi test thì comment hàm updateUserInfo bên dưới lại và uncomment hàm trên
+* */
+// export function updateUserInfo(token, user) {
+//   const url = ''
+//   const config = { headers: { 'Authorization': token } }
+//   return axios.post(url, { user }, config)
+// }
+
+export function updateUserInfo(token, infoCanUpdate) {
+  return Promise.resolve({ data: infoCanUpdate })
+}
 
 export function getCheckInHistory(username) {
   const url = 'http://localhost:8080/check-in-history'

@@ -4,17 +4,17 @@
       <el-row :gutter="20">
 
         <el-col :span="6" :xs="24">
-          <user-card :user="user" />
+          <user-card :user="user"/>
         </el-col>
 
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane label="Nơi đã đến" name="timeline">
-                <timeline :timeline="user.timeline" />
+                <timeline :timeline="user.timeline"/>
               </el-tab-pane>
               <el-tab-pane label="Tài khoản" name="account">
-                <account :user="user" />
+                <account :user="userInfoCanChange" @updateUserInfo="updateUserInfo"/>
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -51,7 +51,17 @@ export default {
       'telegramUserName',
       'address',
       'checkInHistory'
-    ])
+    ]),
+    userInfoCanChange() {
+      return {
+        name: this.user.name,
+        gender: this.user.gender,
+        dob: this.user.dob,
+        phoneNumber: this.user.phoneNumber,
+        telegramUserName: this.user.telegramUserName,
+        address: this.user.address
+      }
+    }
   },
   created() {
     this.getUser()
@@ -69,6 +79,18 @@ export default {
         address: this.address,
         timeline: this.checkInHistory
       }
+    },
+    updateUserInfo(infoCanUpdate) {
+      this.$store.dispatch('user/updateUserInfo', infoCanUpdate).then(data => {
+        this.$message({
+          message: 'Cập nhật thông tin thành công !',
+          type: 'success',
+          duration: 5 * 1000
+        })
+        for (const prop of Object.keys(data)) {
+          this.user[prop] = data[prop]
+        }
+      })
     }
   }
 }

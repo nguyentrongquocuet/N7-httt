@@ -1,4 +1,4 @@
-import { login, logout, getInfo, getCheckInHistory } from '@/api/user'
+import { login, logout, getInfo, getCheckInHistory, updateUserInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -61,6 +61,25 @@ const actions = {
         resolve()
       }).catch(error => {
         reject(error)
+      })
+    })
+  },
+  updateUserInfo({ commit, state }, infoCanUpdate) {
+    return new Promise((resolve, reject) => {
+      updateUserInfo(state.token, infoCanUpdate).then(response => {
+        const data = response.data
+        const { name, gender, dob, phoneNumber, telegramUserName, address } = data
+
+        commit('SET_NAME', name)
+        commit('SET_GENDER', gender)
+        commit('SET_DOB', dob)
+        commit('SET_PHONE_NUMBER', phoneNumber)
+        commit('SET_TELEGRAM_USERNAME', telegramUserName)
+        commit('SET_ADDRESS', address)
+
+        resolve(data)
+      }).catch(err => {
+        reject(err)
       })
     })
   },
