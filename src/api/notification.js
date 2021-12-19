@@ -26,6 +26,10 @@ export function sendMessage(data) {
   })
 }
 
+export function sendTelegramMessage(data) {
+  return axios.post('http://localhost:1872/api/send_text', data)
+}
+
 export function getMessages() {
   return axios.get('http://localhost:8080/message/all', {
     headers: {

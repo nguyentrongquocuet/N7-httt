@@ -27,27 +27,31 @@
       <div class="content">
         <el-card v-loading="loadingMessage">
           <div class="left-container">
-            <message v-for="(message, index) in this.messages" :key="index" :message="message"/>
+            <message v-for="(message, index) in this.messages" :key="index" :message="message" />
           </div>
         </el-card>
         <div class="right-container">
-          <message-filter @searchMessageByCities="this.filterMessage"/>
+          <message-filter @searchMessageByCities="this.filterMessage" />
         </div>
       </div>
     </el-card>
     <el-dialog :visible.sync="dialogVisible" :title="dialogTitle">
       <el-form v-model="messageForm">
         <el-form-item prop="cities" label="Chọn Thành phố">
-          <drag-select :initial-value="messageForm.cities" style="width: 100%; margin:0" @change="setCities"/>
+          <drag-select :initial-value="messageForm.cities" style="width: 100%; margin:0" @change="setCities" />
         </el-form-item>
         <el-form-item v-if="isSendingMessage" prop="content" label="Nội dung">
-          <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}"/>
+          <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}" />
         </el-form-item>
       </el-form>
       <slot slot="footer">
         <el-button icon="el-icon-circle-close" @click="resetMessageForm">Hủy</el-button>
-        <el-button v-if="isSendingMessage" type="primary" icon="el-icon-s-promotion" :loading="sendMessageProcessing"
-                   @click="sendMessage"
+        <el-button
+          v-if="isSendingMessage"
+          type="primary"
+          icon="el-icon-s-promotion"
+          :loading="sendMessageProcessing"
+          @click="sendMessage"
         >
           Gửi
         </el-button>
@@ -64,7 +68,7 @@ import message from '@/views/notification/components/message'
 import MessageFilter from '@/views/notification/components/messagefilter'
 import DragSelect from '@/views/notification/components/DragSelect'
 import checkPermission from '@/utils/permission'
-import { getMessages, getSubscribeCities, sendMessage, updateSubscribeCities } from '@/api/notification'
+import { getMessages, getSubscribeCities, sendMessage, updateSubscribeCities, sendTelegramMessage } from '@/api/notification'
 
 export default {
   name: 'Index',
@@ -86,13 +90,13 @@ export default {
       loadingMessage: false
     }
   },
-  created() {
-    this.getMessages()
-  },
   computed: {
     isSendingMessage() {
       return this.dialogTitle != null && this.dialogTitle.toLowerCase() === 'Thông báo mới'.toLowerCase()
     }
+  },
+  created() {
+    this.getMessages()
   },
   methods: {
     checkPermission,
@@ -132,14 +136,21 @@ export default {
       sendMessage({
         cities: cities,
         content: this.messageForm.content
-      }).then(response => {
-        console.log(response.data)
+      }).then(({ data }) => {
         this.resetMessageForm()
         this.$message({
           message: 'Gửi thành công !',
           type: 'success'
         })
         this.getMessages()
+        /**
+        * If no content or users have the length of 0, sending message makes no sense
+        */
+        if (!data.content || !data.users.length) return
+        const dataToSend = { content: data.content, uid: data.users.filter(user => !!user.telegramUid).map(user => Number.parseInt(user.telegramUid, 10)) }
+
+        sendTelegramMessage(dataToSend)
+        console.log(dataToSend)
       }).catch(err => {
         console.log(err)
         this.$message({
