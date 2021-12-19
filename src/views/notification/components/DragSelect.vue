@@ -13,9 +13,17 @@ import { getCities } from '@/api/notification' // base on element-ui
 export default {
   name: 'DragSelectDemo',
   components: { ElDragSelect },
+  props: {
+    initialValue: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   data() {
     return {
-      value: [],
+      value: this.initialValue,
       options: []
     }
   },

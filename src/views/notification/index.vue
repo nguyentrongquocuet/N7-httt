@@ -4,7 +4,13 @@
       <div slot="header" class="clearfix">
         <span><strong>THÔNG BÁO</strong></span>
         <div style="float: right">
-          <el-button v-if="!checkPermission(['admin'])" size="small" type="success" icon="el-icon-message">Đăng ký nhận
+          <el-button
+            v-if="!checkPermission(['admin'])"
+            size="small"
+            type="success"
+            icon="el-icon-message"
+            @click="showSubscriberDialog"
+          >Đăng ký nhận
             thông báo
           </el-button>
           <el-button
@@ -12,7 +18,7 @@
             size="small"
             type="success"
             icon="el-icon-edit"
-            @click="dialogVisible= true"
+            @click="showSendMessageDialog"
           >
             Gửi thông báo
           </el-button>
@@ -29,19 +35,24 @@
         </div>
       </div>
     </el-card>
-    <el-dialog :visible.sync="dialogVisible" title="Thông báo mới">
+    <el-dialog :visible.sync="dialogVisible" :title="dialogTitle">
       <el-form v-model="messageForm">
         <el-form-item prop="cities" label="Chọn Thành phố">
-          <drag-select style="width: 100%; margin:0" @change="setCities"/>
+          <drag-select :initial-value="messageForm.cities" style="width: 100%; margin:0" @change="setCities"/>
         </el-form-item>
-        <el-form-item prop="content" label="Nội dung">
+        <el-form-item v-if="isSendingMessage" prop="content" label="Nội dung">
           <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}"/>
         </el-form-item>
       </el-form>
       <slot slot="footer">
-        <el-button icon="el-icon-circle-close" @click="resetMessageForm">Cancel</el-button>
-        <el-button type="primary" icon="el-icon-s-promotion" :loading="sendMessageProcessing" @click="sendMessage">
-          Send
+        <el-button icon="el-icon-circle-close" @click="resetMessageForm">Hủy</el-button>
+        <el-button v-if="isSendingMessage" type="primary" icon="el-icon-s-promotion" :loading="sendMessageProcessing"
+                   @click="sendMessage"
+        >
+          Gửi
+        </el-button>
+        <el-button v-else type="warning" icon="el-icon-s-promotion" :loading="sendMessageProcessing" @click="subscribe">
+          Lưu
         </el-button>
       </slot>
     </el-dialog>
@@ -53,7 +64,7 @@ import message from '@/views/notification/components/message'
 import MessageFilter from '@/views/notification/components/messagefilter'
 import DragSelect from '@/views/notification/components/DragSelect'
 import checkPermission from '@/utils/permission'
-import { getMessages, sendMessage } from '@/api/notification'
+import { getMessages, getSubscribeCities, sendMessage, updateSubscribeCities } from '@/api/notification'
 
 export default {
   name: 'Index',
@@ -65,6 +76,7 @@ export default {
   data: () => {
     return {
       messages: [],
+      dialogTitle: '',
       dialogVisible: false,
       messageForm: {
         cities: [],
@@ -76,6 +88,11 @@ export default {
   },
   created() {
     this.getMessages()
+  },
+  computed: {
+    isSendingMessage() {
+      return this.dialogTitle != null && this.dialogTitle.toLowerCase() === 'Thông báo mới'.toLowerCase()
+    }
   },
   methods: {
     checkPermission,
@@ -134,6 +151,26 @@ export default {
           this.sendMessageProcessing = false
         })
     },
+    subscribe() {
+      this.sendMessageProcessing = true
+      let cities = this.messageForm.cities.reduce((str, cityId) => {
+        return str + cityId + ','
+      }, '')
+      cities = cities.substr(0, cities.length - 1)
+      updateSubscribeCities({ cities: cities }).then(response => {
+        const data = response.data
+        this.messageForm.cities = data.map(city => {
+          return city.id
+        })
+        console.log(data)
+        this.$message.success('Cập nhật thành công !')
+        this.sendMessageProcessing = false
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('Lỗi khi cập nhật !')
+        this.sendMessageProcessing = false
+      })
+    },
     resetMessageForm() {
       this.dialogVisible = false
       setTimeout(() => {
@@ -146,6 +183,21 @@ export default {
     },
     setCities(cities) {
       this.messageForm.cities = cities
+    },
+    showSubscriberDialog() {
+      getSubscribeCities().then(response => {
+        const data = response.data
+        this.messageForm.cities = data.map(city => {
+          return city.id
+        })
+        console.log(this.messageForm.cities)
+        this.dialogVisible = true
+        this.dialogTitle = 'Đăng ký nhận thông báo'
+      })
+    },
+    showSendMessageDialog() {
+      this.dialogVisible = true
+      this.dialogTitle = 'Thông báo mới'
     }
   }
 }

@@ -33,3 +33,18 @@ export function getMessages() {
     }
   })
 }
+export function getSubscribeCities() {
+  return axios.get('http://localhost:8080/message/subscribe', {
+    headers: {
+      'Authorization': getToken()
+    }
+  })
+}
+export function updateSubscribeCities(data) {
+  return axios.post('http://localhost:8080/message/subscribe', data, {
+    headers: {
+      'Authorization': getToken(),
+      'Content-Type': 'application/json'
+    }
+  })
+}

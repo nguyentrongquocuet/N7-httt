@@ -34,7 +34,7 @@ export function login(data) {
 
 export function getInfo(token) {
   const url = 'http://localhost:8080/user'
-  const config = { headers: { 'Authorization': token }}
+  const config = { headers: { 'Authorization': token } }
   return axios.get(url, config)
 }
 
@@ -56,9 +56,10 @@ export function updateUserInfo(token, infoCanUpdate) {
   console.log('sending update user info: ')
   console.log(infoCanUpdate)
   const url = 'http://localhost:8080/user'
-  const config = { headers: { 'Authorization': token }}
+  const config = { headers: { 'Authorization': token } }
   return axios.put(url, infoCanUpdate, config)
 }
+
 //
 // export function updateUserInfo(token, infoCanUpdate) {
 //   console.log('sending update user info: ')
@@ -70,6 +71,12 @@ export function getCheckInHistory(username) {
   const url = 'http://localhost:8080/check-in-history'
   const config = {}
   return axios.post(url, { username }, config)
+}
+
+export function signup(data) {
+  const url = 'http://localhost:8080/registration'
+  const config = {}
+  return axios.post(url, data, config)
 }
 
 export function logout() {

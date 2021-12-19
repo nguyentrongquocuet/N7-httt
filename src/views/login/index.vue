@@ -15,7 +15,7 @@
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
         <el-input
           ref="username"
@@ -31,7 +31,7 @@
       <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <svg-icon icon-class="password"/>
           </span>
           <el-input
             :key="passwordType"
@@ -47,7 +47,7 @@
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
           </span>
         </el-form-item>
       </el-tooltip>
@@ -59,12 +59,19 @@
         @click.native.prevent="handleLogin"
       >Đăng nhập
       </el-button>
+      <el-button
+        type="non"
+        style="float: right"
+        @click="handleSignup"
+      >Đăng ký
+      </el-button>
     </el-form>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { signup } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -149,6 +156,24 @@ export default {
             })
         } else {
           console.log('error submit!!')
+          this.$message.warning('Thông tin cung cấp không hợp lệ, vui lòng kiểm tra lại !')
+          return false
+        }
+      })
+    },
+    handleSignup() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          signup(this.loginForm)
+            .then((response) => {
+              this.$message.success('Tạo tài khoản thành công, bạn có thể sử dụng nó !')
+            })
+            .catch((err) => {
+              console.log(err)
+              this.$message.error('Tài khoản đã tồn tại !')
+            })
+        } else {
+          console.log('error signup!!')
           this.$message.warning('Thông tin cung cấp không hợp lệ, vui lòng kiểm tra lại !')
           return false
         }
