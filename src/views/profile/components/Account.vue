@@ -13,7 +13,10 @@
       <el-input v-model="userCopied.phoneNumber"/>
     </el-form-item>
     <el-form-item label="Tài khoản Telegram">
-      <el-input v-model="userCopied.telegramUserName"/>
+      <el-input v-model="userCopied.telegramUsername"/>
+    </el-form-item>
+    <el-form-item label="Mã Telegram UID">
+      <el-input v-model="userCopied.telegramUid"/>
     </el-form-item>
     <el-form-item label="Địa chỉ hiện tại">
       <el-input v-model="userCopied.address"/>
@@ -39,7 +42,8 @@ export default {
           gender: '',
           dob: '',
           phoneNumber: '',
-          telegramUserName: '',
+          telegramUsername: '',
+          telegramUid: '',
           address: ''
         }
       }
@@ -47,8 +51,11 @@ export default {
   },
   data: function() {
     return {
-      userCopied: deepClone(this.user)
+      userCopied: {}
     }
+  },
+  created() {
+    this.resetUpdate()
   },
   computed: {
     changedUserInfo() {
@@ -65,7 +72,10 @@ export default {
   },
   methods: {
     submit() {
-      this.$emit('updateUserInfo', this.userCopied)
+      this.$emit('updateUserInfo', Object.assign({}, this.userCopied))
+      setTimeout(() => {
+        this.resetUpdate()
+      }, 300)
     },
     resetUpdate() {
       this.userCopied = deepClone(this.user)

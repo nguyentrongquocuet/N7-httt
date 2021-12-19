@@ -1,6 +1,6 @@
 import { login, logout, getInfo, getCheckInHistory, updateUserInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import router, { resetRouter } from '@/router'
+import { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
@@ -10,7 +10,8 @@ const state = {
   gender: '',
   dob: '',
   phoneNumber: '',
-  telegramUserName: '',
+  telegramUsername: '',
+  telegramUid: '',
   address: '',
   checkInHistory: []
 }
@@ -40,8 +41,11 @@ const mutations = {
   SET_ADDRESS: (state, address) => {
     state.address = address
   },
-  SET_TELEGRAM_USERNAME: (state, telegramUserName) => {
-    state.telegramUserName = telegramUserName
+  SET_TELEGRAM_USERNAME: (state, telegramUsername) => {
+    state.telegramUsername = telegramUsername
+  },
+  SET_TELEGRAM_UID: (state, telegramUid) => {
+    state.telegramUid = telegramUid
   },
   SET_CHECKIN_HISTORY: (state, checkInHistory) => {
     state.checkInHistory = checkInHistory
@@ -68,13 +72,20 @@ const actions = {
     return new Promise((resolve, reject) => {
       updateUserInfo(state.token, infoCanUpdate).then(response => {
         const data = response.data
-        const { name, gender, dob, phoneNumber, telegramUserName, address } = data
-
+        let { name, gender, dob, phoneNumber, telegramUsername, telegramUid, address } = data
+        name = name != null ? name : ''
+        gender = gender != null ? gender : ''
+        dob = dob != null ? dob : ''
+        phoneNumber = phoneNumber != null ? phoneNumber : ''
+        telegramUsername = telegramUsername != null ? telegramUsername : ''
+        telegramUid = telegramUid != null ? telegramUid : ''
+        address = address != null ? address : ''
         commit('SET_NAME', name)
         commit('SET_GENDER', gender)
         commit('SET_DOB', dob)
         commit('SET_PHONE_NUMBER', phoneNumber)
-        commit('SET_TELEGRAM_USERNAME', telegramUserName)
+        commit('SET_TELEGRAM_USERNAME', telegramUsername)
+        commit('SET_TELEGRAM_UID', telegramUid)
         commit('SET_ADDRESS', address)
 
         resolve(data)
@@ -94,13 +105,21 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { avatar, roles, name, gender, dob, phoneNumber, telegramUserName, address } = data
+        let { avatar, role, name, gender, dob, phoneNumber, telegramUsername, telegramUid, address } = data
 
+        const roles = [role]
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-
+        avatar = avatar != null ? avatar : 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+        name = name != null ? name : ''
+        gender = gender != null ? gender : ''
+        dob = dob != null ? dob : ''
+        phoneNumber = phoneNumber != null ? phoneNumber : ''
+        telegramUsername = telegramUsername != null ? telegramUsername : ''
+        telegramUid = telegramUid != null ? telegramUid : ''
+        address = address != null ? address : ''
         commit('SET_AVATAR', avatar)
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
@@ -108,7 +127,8 @@ const actions = {
         commit('SET_DOB', dob)
         commit('SET_PHONE_NUMBER', phoneNumber)
         commit('SET_ADDRESS', address)
-        commit('SET_TELEGRAM_USERNAME', telegramUserName)
+        commit('SET_TELEGRAM_USERNAME', telegramUsername)
+        commit('SET_TELEGRAM_UID', telegramUid)
         // commit('SET_CHECKIN_HISTORY', checkInHistory)
 
         resolve(data)
@@ -159,26 +179,6 @@ const actions = {
       removeToken()
       resolve()
     })
-  },
-
-  // dynamically modify permissions
-  async changeRoles({ commit, dispatch }, role) {
-    const token = role + '-token'
-
-    commit('SET_TOKEN', token)
-    setToken(token)
-
-    const { roles } = await dispatch('getInfo')
-
-    resetRouter()
-
-    // generate accessible routes map based on roles
-    const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
-    // dynamically add accessible routes
-    router.addRoutes(accessRoutes)
-
-    // reset visited views and cached views
-    dispatch('tagsView/delAllViews', null, { root: true })
   }
 }
 

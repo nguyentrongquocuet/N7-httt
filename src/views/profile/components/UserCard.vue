@@ -46,7 +46,7 @@
         <div class="user-bio-section-header"><span>Tài khoản Telegram</span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            {{ user.telegramUserName }}
+            {{ user.telegramUsername }}
           </div>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default {
           gender: '',
           dob: '',
           phoneNumber: '',
-          telegramUserName: '',
+          telegramUsername: '',
           address: ''
         }
       }

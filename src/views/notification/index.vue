@@ -19,24 +19,23 @@
         </div>
       </div>
       <div class="content">
-        <div class="left-container">
-          <message v-for="(message, index) in this.messages" :key="index" :message="message" />
-        </div>
+        <el-card v-loading="loadingMessage">
+          <div class="left-container">
+            <message v-for="(message, index) in this.messages" :key="index" :message="message"/>
+          </div>
+        </el-card>
         <div class="right-container">
-          <message-filter @messageFilter="this.filterMessage" />
+          <message-filter @searchMessageByCities="this.filterMessage"/>
         </div>
       </div>
     </el-card>
     <el-dialog :visible.sync="dialogVisible" title="Thông báo mới">
       <el-form v-model="messageForm">
-        <el-form-item prop="cities" label="Tới Thành phố">
-          <drag-select style="width: 100%; margin:0" @change="setCities" />
-        </el-form-item>
-        <el-form-item prop="receiver" label="Tới mã Telegram người dùng">
-          <el-input v-model="messageForm.receiver" />
+        <el-form-item prop="cities" label="Chọn Thành phố">
+          <drag-select style="width: 100%; margin:0" @change="setCities"/>
         </el-form-item>
         <el-form-item prop="content" label="Nội dung">
-          <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}" />
+          <el-input v-model="messageForm.content" type="textarea" :autosize="{minRows: 4, maxRows:10}"/>
         </el-form-item>
       </el-form>
       <slot slot="footer">
@@ -54,7 +53,7 @@ import message from '@/views/notification/components/message'
 import MessageFilter from '@/views/notification/components/messagefilter'
 import DragSelect from '@/views/notification/components/DragSelect'
 import checkPermission from '@/utils/permission'
-import { sendMessage } from '@/api/notification'
+import { getMessages, sendMessage } from '@/api/notification'
 
 export default {
   name: 'Index',
@@ -68,75 +67,62 @@ export default {
       messages: [],
       dialogVisible: false,
       messageForm: {
-        receiver: '',
         cities: [],
         content: ''
       },
-      sendMessageProcessing: false
+      sendMessageProcessing: false,
+      loadingMessage: false
     }
   },
   created() {
-    this.messages = [
-      {
-        city: 'Hà Nội',
-        content: 'Tìm người tới các địa điểm',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Bắc Giang',
-        content: 'Triển khai tiêm mũi thứ 3 cho toàn bộ người dân',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Hà Quảng',
-        content: 'Cấp thuốc điều trị tại nhà cho những người đủ điều kiện',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Cao Bằng',
-        content: 'Thông báo tạm dừng các chuyến xe liên tỉnh, tạm dừng các hoạt động không thiết yếu',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Hà Nội',
-        content: 'Tìm người tới các địa điểm',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Bắc Giang',
-        content: 'Triển khai tiêm mũi thứ 3 cho toàn bộ người dân',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Hà Quảng',
-        content: 'Cấp thuốc điều trị tại nhà cho những người đủ điều kiện',
-        date: '05-12-2021'
-      },
-      {
-        city: 'Cao Bằng',
-        content: 'Thông báo tạm dừng các chuyến xe liên tỉnh, tạm dừng các hoạt động không thiết yếu',
-        date: '05-12-2021'
-      }
-    ]
+    this.getMessages()
   },
   methods: {
     checkPermission,
-    filterMessage(filterConditions) {
-      console.log('start filter message')
-      console.log(filterConditions)
+    getMessages() {
+      getMessages().then(response => {
+        MESSAGE_DATE = response.data.map(msg => {
+          return {
+            cityId: msg.city.id,
+            city: msg.city.name,
+            content: msg.message.content
+          }
+        })
+      })
+    },
+    filterMessage(citiesId) {
+      console.log('filterMessage')
+      console.log(citiesId)
+      this.loadingMessage = true
+      setTimeout(() => {
+        this.messages = MESSAGE_DATE.filter(message => {
+          for (const citiId of citiesId) {
+            if (citiId === message.cityId) {
+              return true
+            }
+          }
+          return false
+        })
+        this.loadingMessage = false
+      }, 200)
     },
     sendMessage() {
       this.sendMessageProcessing = true
+      let cities = this.messageForm.cities.reduce((str, cityId) => {
+        return str + cityId + ','
+      }, '')
+      cities = cities.substr(0, cities.length - 1)
       sendMessage({
-        uid: this.messageForm.receiver * 1,
+        cities: cities,
         content: this.messageForm.content
       }).then(response => {
-        console.log(response)
+        console.log(response.data)
         this.resetMessageForm()
         this.$message({
           message: 'Gửi thành công !',
           type: 'success'
         })
+        this.getMessages()
       }).catch(err => {
         console.log(err)
         this.$message({
@@ -152,19 +138,18 @@ export default {
       this.dialogVisible = false
       setTimeout(() => {
         this.messageForm = {
-          receiver: '',
+          cities: [],
           content: ''
         }
         this.sendMessageProcessing = false
       }, 200)
     },
     setCities(cities) {
-      console.log('change cities')
-      console.log(cities)
       this.messageForm.cities = cities
     }
   }
 }
+let MESSAGE_DATE
 </script>
 
 <style scoped>
@@ -183,7 +168,7 @@ export default {
   width: 45vw;
   height: 80vh;
   display: inline-block;
-  padding-bottom: 50px;
+  padding-bottom: 0px;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */

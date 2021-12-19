@@ -8,7 +8,7 @@
           size="small"
           icon="el-icon-circle-plus-outline"
           style="float: right"
-          @click="dialogVisible = true"
+          @click="handleAddRecord"
         >
           Thêm bệnh nhân
         </el-button>
@@ -17,16 +17,22 @@
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="Mã bệnh nhân" prop="id">
-              <el-input v-model="formSearch.id" size="small" />
+              <el-input v-model="formSearch.id" size="small"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Địa chỉ" prop="address">
-              <el-input v-model="formSearch.address" size="small" />
+              <el-input v-model="formSearch.address" size="small"/>
             </el-form-item>
           </el-col>
           <div style="float: right; margin-right: 10px">
-            <el-button size="small" type="primary" icon="el-icon-search" :loading="searchingMedicalRecord" @click="searchMedicalRecord">Tìm kiếm
+            <el-button
+              size="small"
+              type="primary"
+              icon="el-icon-search"
+              :loading="searchingMedicalRecord"
+              @click="searchMedicalRecord"
+            >Tìm kiếm
             </el-button>
             <el-button size="small" type="none" icon="el-icon-refresh-left" @click="resetMedicalRecordFormSearch">Xóa
             </el-button>
@@ -34,43 +40,63 @@
         </el-row>
       </el-form>
       <el-table v-if="hasMedicalRecord" :data="medicalRecord" style="margin-top: 20px" border>
-        <el-table-column prop="id" label="Mã" width="50" fixed align="center" />
-        <el-table-column prop="name" label="Họ tên" width="150" fixed />
-        <el-table-column prop="gender" label="Giới tính" width="80" />
-        <el-table-column prop="dob" label="Ngày sinh" width="100" align="center" />
-        <el-table-column prop="address" label="Địa chỉ" min-width="250" />
-        <el-table-column prop="status" label="Tình trạng" min-width="250" />
-        <el-table-column prop="confirmedDate" label="Ngày mắc" width="100" align="center" />
+        <el-table-column prop="id" label="Mã" width="50" fixed align="center"/>
+        <el-table-column prop="name" label="Họ tên" width="150" fixed/>
+        <el-table-column prop="gender" label="Giới tính" width="80"/>
+        <el-table-column prop="dob" label="Ngày sinh" width="100" align="center"/>
+        <el-table-column prop="address" label="Địa chỉ" min-width="250"/>
+        <el-table-column prop="status" label="Tình trạng" min-width="250"/>
+        <el-table-column prop="confirmedDate" label="Ngày mắc" width="100" align="center"/>
         <el-table-column fixed="right" label="Thao tác" width="100" align="center">
-          <template slot-scope="scope">
-            <el-button type="warning" size="small" circle icon="el-icon-edit" />
-            <el-button type="danger" size="small" circle icon="el-icon-delete" />
+          <template slot-scope="{row}">
+            <el-button type="warning" size="small" circle icon="el-icon-edit" @click="handleUpdateRecord(row)"/>
+            <el-popconfirm
+              confirm-button-text="Xóa"
+              cancel-button-text="Hủy"
+              icon="el-icon-info"
+              title="Bạn có chắc muốn xóa?"
+              @onConfirm="deleteMedicalRecord(row)"
+            >
+              <el-button
+                slot="reference"
+                style="margin-left: 10px"
+                type="danger"
+                size="small"
+                circle
+                icon="el-icon-delete"
+              />
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
-      <el-dialog title="Thêm bệnh nhân mới" :visible.sync="dialogVisible" width="70vw">
+      <el-dialog
+        :title=dialogTitle
+        :visible.sync="dialogVisible"
+        :close-on-click-modal="false"
+        width="70vw"
+        @close="resetPatientRecordForm">
         <el-form ref="patientForm" :model="patientForm">
           <el-row :gutter="15">
             <el-col :span="12">
               <el-form-item label="Căn cước công dân">
-                <el-input v-model="patientForm.personId" size="small" />
+                <el-input v-model="patientForm.personId" size="small"/>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Mã bệnh nhân">
-                <el-input v-model="patientForm.id" size="small" />
+                <el-input v-model="patientForm.id" size="small"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="15">
             <el-col :span="12">
               <el-form-item label="Họ tên">
-                <el-input v-model="patientForm.name" size="small" />
+                <el-input v-model="patientForm.name" size="small"/>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Trạng thái">
-                <el-input v-model="patientForm.status" size="small" />
+                <el-input v-model="patientForm.status" size="small"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -78,9 +104,9 @@
             <el-col :span="6">
               <el-form-item label="Giới tính">
                 <el-select v-model="patientForm.gender" placeholder="giới tính">
-                  <el-option label="Nam" value="Nam" />
-                  <el-option label="Nữ" value="Nữ" />
-                  <el-option label="Khác" value="Khác" />
+                  <el-option label="Nam" value="Nam"/>
+                  <el-option label="Nữ" value="Nữ"/>
+                  <el-option label="Khác" value="Khác"/>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -91,7 +117,7 @@
                 <!--                  type="date"-->
                 <!--                  placeholder="date of birth">-->
                 <!--                </el-date-picker>-->
-                <el-input v-model="patientForm.dob" size="small" placeholder="ngày / tháng / năm" />
+                <el-input v-model="patientForm.dob" size="small" placeholder="ngày / tháng / năm"/>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -101,21 +127,21 @@
                 <!--                  type="date"-->
                 <!--                  placeholder="confirmed date">-->
                 <!--                </el-date-picker>-->
-                <el-input v-model="patientForm.confirmedDate" size="small" placeholder="ngày / tháng / năm" />
+                <el-input v-model="patientForm.confirmedDate" size="small" placeholder="ngày / tháng / năm"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="15">
             <el-col :span="12">
               <el-form-item label="Địa chỉ">
-                <el-input v-model="patientForm.address" size="small" />
+                <el-input v-model="patientForm.address" size="small"/>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Kiểu mắc" style="display: inline-block">
                 <el-select v-model="patientForm.type" placeholder="Chọn kiểu mắc">
-                  <el-option value="Cộng đồng" label="Trong cộng đồng" />
-                  <el-option value="Khu cách ly" label="Trong Khu cách ly" />
+                  <el-option value="Cộng đồng" label="Trong cộng đồng"/>
+                  <el-option value="Khu cách ly" label="Trong Khu cách ly"/>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -132,8 +158,21 @@
           </el-row>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button icon="el-icon-circle-close" @click="resetPatientRecordForm">Cancel</el-button>
-          <el-button type="primary" icon="el-icon-s-promotion" :loading="creatingPatientRecord" @click="createPatientRecord">Confirm</el-button>
+          <el-button icon="el-icon-circle-close" @click="resetPatientRecordForm">Hủy</el-button>
+          <el-button
+            v-if="isUpdateRecord"
+            type="primary"
+            icon="el-icon-s-promotion"
+            :loading="creatingPatientRecord"
+            @click="updateRecord"
+          >Lưu</el-button>
+          <el-button
+            v-else
+            type="primary"
+            icon="el-icon-s-promotion"
+            :loading="creatingPatientRecord"
+            @click="createPatientRecord"
+          >Tạo</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -141,7 +180,7 @@
 </template>
 
 <script>
-import { fetchList, insert } from '@/api/medicalrecord'
+import { deletePatient, fetchList, getPatientById, insert, updatePatient } from '@/api/medicalrecord'
 import { getSimpleDate, convertToYYYYMMDDFormat } from '@/utils/dateUtils'
 
 export default {
@@ -170,6 +209,7 @@ export default {
         type: ''
       },
       dialogVisible: false,
+      dialogTitle: '',
       searchingMedicalRecord: false,
       creatingPatientRecord: false
     }
@@ -177,9 +217,16 @@ export default {
   computed: {
     hasMedicalRecord() {
       return this.medicalRecord.length > 0
+    },
+    isUpdateRecord() {
+      return this.dialogTitle.toLowerCase() === 'Cập nhật hồ sơ bệnh nhân'.toLowerCase()
     }
   },
   methods: {
+    handleAddRecord() {
+      this.dialogTitle = 'Thêm hồ sơ bệnh nhân'
+      this.dialogVisible = true
+    },
     onCloseDialog() {
       this.$refs['patientForm'].resetFields()
     },
@@ -269,6 +316,77 @@ export default {
         .finally(() => {
           this.searchingMedicalRecord = false
         })
+    },
+    handleUpdateRecord(row) {
+      getPatientById(row.id).then(response => {
+        const record = response.data
+        console.log(record)
+        this.patientForm = {
+          id: record.id,
+          name: record.person.name,
+          gender: record.person.gender,
+          dob: getSimpleDate(record.person.dateOfBirth),
+          address: record.person.address,
+          status: record.status,
+          confirmedDate: getSimpleDate(record.confirmedDate),
+          diseaseId: 'covid-19',
+          personId: record.person.id,
+          details: record.detail,
+          type: record.type
+        }
+        this.showUpdateDialog()
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('Không lấy được dữ liệu !')
+      })
+    },
+    showUpdateDialog() {
+      this.dialogTitle = 'Cập nhật hồ sơ bệnh nhân'
+      this.dialogVisible = true
+    },
+    updateRecord() {
+      const patientRecord = `{
+        "confirmedDate": "${convertToYYYYMMDDFormat(this.patientForm.confirmedDate)}",
+        "diseaseId": "covid-19",
+        "id": "${this.patientForm.id}",
+        "person":{
+          "address": "${this.patientForm.address}",
+          "id": "${this.patientForm.personId}",
+          "dateOfBirth": "${convertToYYYYMMDDFormat(this.patientForm.dob)}",
+          "gender": "${this.patientForm.gender}",
+          "name": "${this.patientForm.name}"
+        },
+        "status": "${this.patientForm.status}",
+        "type": "${this.patientForm.type}",
+        "detail": "${this.patientForm.details}"
+      }`
+      console.log(patientRecord)
+      this.creatingPatientRecord = true
+      updatePatient(patientRecord)
+        .then(message => {
+          console.log(message)
+          this.$message.success('Cập nhật thành công !')
+          this.resetPatientRecordForm()
+          this.onSearch()
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('Lỗi khi cập nhật !')
+        })
+        .finally(() => {
+          this.creatingPatientRecord = false
+        })
+    },
+    deleteMedicalRecord(row) {
+      deletePatient(row.id).then(response => {
+        console.log(response)
+        this.$message.success('Xóa thành công !')
+
+        this.onSearch()
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('Lỗi khi xóa !')
+      })
     }
   }
 }

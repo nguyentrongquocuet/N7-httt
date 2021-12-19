@@ -21,29 +21,22 @@ export function login(data) {
   return axios.post(url, data, config)
 }
 
-export function getInfo(token) {
-  if (token.indexOf('token') < 0) {
-    token = 'user-token'
-  }
-  return request({
-    url: '/vue-element-admin/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
-
-/*
-*   TODO: QUỐC ơi sau khi đăng nhập (có token rồi).
-*   thì sẽ có tiếp request lấy thông tin người dùng
-*   token được gửi lên theo header Authorization
-*   m sửa lại cái url trỏ tới API lấy thông tin của m,
-*   test bằng cách comment hàm getInfo trên đi và uncomment hàm dưới
-*/
 // export function getInfo(token) {
-//   const url = ''
-//   const config = { headers: { 'Authorization': token }}
-//   return axios.get(url, config)
+//   if (token.indexOf('token') < 0) {
+//     token = 'admin-token'
+//   }
+//   return request({
+//     url: '/vue-element-admin/user/info',
+//     method: 'get',
+//     params: { token }
+//   })
 // }
+
+export function getInfo(token) {
+  const url = 'http://localhost:8080/user'
+  const config = { headers: { 'Authorization': token }}
+  return axios.get(url, config)
+}
 
 /*
 * //TODO: Quốc ơi updateUserInfo cập nhật thông tin cá nhân của user
@@ -59,15 +52,19 @@ export function getInfo(token) {
 * trả về thông tin user sau khi cập nhật giống như getUserInfo,
 * khi test thì comment hàm updateUserInfo bên dưới lại và uncomment hàm trên
 * */
-// export function updateUserInfo(token, user) {
-//   const url = ''
-//   const config = { headers: { 'Authorization': token } }
-//   return axios.post(url, { user }, config)
-// }
-
 export function updateUserInfo(token, infoCanUpdate) {
-  return Promise.resolve({ data: infoCanUpdate })
+  console.log('sending update user info: ')
+  console.log(infoCanUpdate)
+  const url = 'http://localhost:8080/user'
+  const config = { headers: { 'Authorization': token }}
+  return axios.put(url, infoCanUpdate, config)
 }
+//
+// export function updateUserInfo(token, infoCanUpdate) {
+//   console.log('sending update user info: ')
+//   console.log(infoCanUpdate)
+//   return Promise.resolve({ data: infoCanUpdate })
+// }
 
 export function getCheckInHistory(username) {
   const url = 'http://localhost:8080/check-in-history'

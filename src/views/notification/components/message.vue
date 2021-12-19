@@ -1,9 +1,9 @@
 <template>
   <el-card shadow="hover" class="box-card">
-    <el-tag class="tag">{{ this.message.city }}</el-tag>
     <div class="content">
       {{ this.message.content }}
     </div>
+    <el-tag class="tag">{{ this.message.city }}</el-tag>
   </el-card>
 </template>
 
@@ -39,6 +39,7 @@ export default {
 .tag {
   margin: 0;
   position: absolute;
+  right: 1%;
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
@@ -47,7 +48,6 @@ export default {
 .content {
   color: black;
   font-size: smaller;
-  margin-left: 7vw;
   position: absolute;
   top: 50%;
   -ms-transform: translateY(-50%);

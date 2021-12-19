@@ -30,6 +30,8 @@ import { mapGetters } from 'vuex'
 import UserCard from './components/UserCard'
 import Timeline from './components/Timeline'
 import Account from './components/Account'
+import { convertToYYYYMMDDFormat, getSimpleDate } from '@/utils/dateUtils'
+import { deepClone } from '@/utils'
 
 export default {
   name: 'Profile',
@@ -48,7 +50,8 @@ export default {
       'gender',
       'dob',
       'phoneNumber',
-      'telegramUserName',
+      'telegramUsername',
+      'telegramUid',
       'address',
       'checkInHistory'
     ]),
@@ -58,7 +61,8 @@ export default {
         gender: this.user.gender,
         dob: this.user.dob,
         phoneNumber: this.user.phoneNumber,
-        telegramUserName: this.user.telegramUserName,
+        telegramUsername: this.user.telegramUsername,
+        telegramUid: this.user.telegramUid,
         address: this.user.address
       }
     }
@@ -75,13 +79,20 @@ export default {
         gender: this.gender,
         dob: this.dob,
         phoneNumber: this.phoneNumber,
-        telegramUserName: this.telegramUserName,
+        telegramUsername: this.telegramUsername,
+        telegramUid: this.telegramUid,
         address: this.address,
         timeline: this.checkInHistory
       }
+      if (this.user.dob != null && this.user.dob !== '') {
+        this.user.dob = getSimpleDate(this.user.dob)
+      }
     },
     updateUserInfo(infoCanUpdate) {
+      infoCanUpdate.dob = infoCanUpdate.dob != null && infoCanUpdate.dob.length > 0 ? convertToYYYYMMDDFormat(infoCanUpdate.dob) : ''
       this.$store.dispatch('user/updateUserInfo', infoCanUpdate).then(data => {
+        console.log('response')
+        console.log(data)
         this.$message({
           message: 'Cập nhật thông tin thành công !',
           type: 'success',
@@ -89,6 +100,9 @@ export default {
         })
         for (const prop of Object.keys(data)) {
           this.user[prop] = data[prop]
+        }
+        if (this.user.dob != null && this.user.dob !== '') {
+          this.user.dob = getSimpleDate(this.user.dob)
         }
       })
     }
